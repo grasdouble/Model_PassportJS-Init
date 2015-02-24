@@ -12,11 +12,11 @@ module.exports = {
      */
     home: function (req, res) {
         Passport
-            .findOne({ protocol: 'local', user: req.user.id })
+            .findOne({ user: req.user.id })
             .exec(function(err, passport) {
                 return res.json({
                     todo: 'home() is not implemented yet! But you are logged in :)',
-                    token: passport.accessToken
+                    token: passport.accessToken!=""?passport.tokens.accessToken:passport.accessToken
                 });
             });
     },
