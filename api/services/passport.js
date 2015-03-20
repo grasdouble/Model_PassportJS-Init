@@ -298,7 +298,7 @@ passport.loadStrategies = function () {
         Strategy = strategies[key].strategy;
         self.use(new Strategy(function(token, done) {
 
-          Passport.findOne({ accessToken: token }, function(err, passport) {
+          Passport.findOne({$or:[{accessToken: token},{'tokens.accessToken': token} ]}, function(err, passport) {
             if (err) { return done(err); }
             if (!passport) { return done(null, false); }
             User.findById(passport.user, function(err, user) {
