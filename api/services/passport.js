@@ -1,3 +1,4 @@
+
 var path     = require('path')
   , url      = require('url')
   , passport = require('passport');
@@ -35,11 +36,11 @@ passport.protocols = require('./protocols');
  * This is where most of the magic happens when a user is authenticating with a
  * third-party provider. What it does, is the following:
  *
- *   1. Given a provider and an identifier, find a mathcing Passport.
+ *   1. Given a provider and an identifier, find a matching Passport.
  *   2. From here, the logic branches into two paths.
  *
  *     - A user is not currently logged in:
- *       1. If a Passport wassn't found, create a new user as well as a new
+ *       1. If a Passport wasn't found, create a new user as well as a new
  *          Passport that will be assigned to the user.
  *       2. If a Passport was found, get the user associated with the passport.
  *
@@ -286,6 +287,9 @@ passport.loadStrategies = function () {
       // emails, we'll set the username field to something more generic.
       _.extend(options, { usernameField: 'identifier' });
 
+      //Let users override the username and passwordField from the options
+      _.extend(options, strategies[key].options || {});
+
       // Only load the local strategy if it's enabled in the config
       if (strategies.local) {
         Strategy = strategies[key].strategy;
@@ -293,30 +297,18 @@ passport.loadStrategies = function () {
         self.use(new Strategy(options, self.protocols.local.login));
       }
     } else if (key === 'bearer') {
-
+      
       if (strategies.bearer) {
         Strategy = strategies[key].strategy;
-        self.use(new Strategy(function(token, done) {
-
-          Passport.findOne({$or:[{accessToken: token},{'tokens.accessToken': token} ]}, function(err, passport) {
-            if (err) { return done(err); }
-            if (!passport) { return done(null, false); }
-            User.findById(passport.user, function(err, user) {
-              if (err) { return done(err); }
-              if (!user) { return done(null, false); }
-              return done(null, user, { scope: 'all' });
-            });
-          });
-
-        }));
+        self.use(new Strategy(self.protocols.bearer.authorize));
       }
-
+      
     } else {
       var protocol = strategies[key].protocol
         , callback = strategies[key].callback;
 
       if (!callback) {
-        callback = path.join('auth', key, 'callback');
+        callback = 'auth/' + key + '/callback';
       }
 
       Strategy = strategies[key].strategy;

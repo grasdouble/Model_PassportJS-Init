@@ -1,7 +1,7 @@
 /**
  * Passport configuration
  *
- * This if the configuration for your Passport.js setup and it where you'd
+ * This is the configuration for your Passport.js setup and where you
  * define the authentication strategies you want your application to employ.
  *
  * I have tested the service with all of the providers listed below - if you
@@ -15,22 +15,21 @@
  */
 
 module.exports.passport = {
-
   local: {
     strategy: require('passport-local').Strategy
   },
+
   bearer: {
-    name: 'Bearer',
     strategy: require('passport-http-bearer').Strategy
   },
 
   twitter: {
     name: 'Twitter',
-    protocol: 'oauth2',
+    protocol: 'oauth',
     strategy: require('passport-twitter').Strategy,
     options: {
-      consumerKey: 'VOY50TyRFr5S2Ui8nLRNRQk2E',
-      consumerSecret: 'icJWvZIuUDZhxBAldWU1UOAC2dC8ywIG6D8VwHYyzqKnObm78o'
+      consumerKey: 'your-consumer-key',
+      consumerSecret: 'your-consumer-secret'
     }
   },
 
@@ -50,7 +49,8 @@ module.exports.passport = {
     strategy: require('passport-facebook').Strategy,
     options: {
       clientID: 'your-client-id',
-      clientSecret: 'your-client-secret'
+      clientSecret: 'your-client-secret',
+      scope: ['email'] /* email is necessary for login behavior */
     }
   },
 
@@ -61,6 +61,17 @@ module.exports.passport = {
     options: {
       clientID: 'your-client-id',
       clientSecret: 'your-client-secret'
+    }
+  },
+
+  cas: {
+    name: 'CAS',
+    protocol: 'cas',
+    strategy: require('passport-cas').Strategy,
+    options: {
+      ssoBaseURL: 'http://your-cas-url',
+      serverBaseURL: 'http://localhost:1337',
+      serviceURL: 'http://localhost:1337/auth/cas/callback'
     }
   }
 };

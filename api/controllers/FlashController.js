@@ -16,13 +16,14 @@ module.exports = {
             .exec(function(err, passport) {
                 return res.json({
                     todo: 'home() is not implemented yet! But you are logged in :)',
-                    token: passport.accessToken!=""?passport.tokens.accessToken:passport.accessToken
+                    token: passport.tokens===undefined?passport.accessToken:passport.tokens.token
                 });
             });
     },
 
     /**
      * `FlashController.remotehome()`
+     * accessible via l’url flash/remotehome?access_token=$ACCESSTOKEN$
      */
     remotehome: function (req, res) {
         return res.json({
